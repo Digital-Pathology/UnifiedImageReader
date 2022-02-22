@@ -3,12 +3,11 @@ import os
 from typing import Iterable, Union
 import numpy as np
 
-from unified_image_reader.adapters import Adapter, SlideIO, VIPS
+from unified_image_reader.adapters import Adapter, VIPS
 
 FORMAT_ADAPTER_MAP = {
     "tif": VIPS,
-    "tiff": VIPS,
-    "svs": SlideIO
+    "tiff": VIPS
 }
 
 class UnsupportedFormatException(Exception): pass
