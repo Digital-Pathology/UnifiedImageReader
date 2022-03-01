@@ -1,4 +1,9 @@
+"""
+    VIPS Adapter
 
+    An adapter that uses pyvips, the Python extension of the libvips library, to implement image reading behavior
+    Adapter currently mapped to reading .tif, tiff files
+"""
 import numpy as np
 
 try:
@@ -25,6 +30,12 @@ FORMAT_TO_DTYPE = {
 class VIPS(Adapter):
 
     def __init__(self, filepath: str):
+        """
+        Initialize VIPS adapter object
+
+        Parameters:
+            filepath (str): Filepath to image file to be opened 
+        """
         self._image = pyvips.Image.new_from_file(filepath)
 
     def get_width(self): return self._image.width
@@ -32,6 +43,7 @@ class VIPS(Adapter):
     def get_height(self): return self._image.height
 
     def get_region(self, region_coordinates, region_dims) -> np.ndarray:
+        """ Calls the crop method of a VipsImage object to create a cropped image for output to a numpy array """
         output_img = self._image.crop(*region_coordinates, *region_dims)
         np_output = np.ndarray(buffer=output_img.write_to_memory(), dtype=FORMAT_TO_DTYPE[output_img.format], shape=[
                                output_img.height, output_img.width, output_img.bands])
