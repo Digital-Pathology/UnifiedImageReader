@@ -8,28 +8,32 @@ from typing import Iterable
 
 import numpy as np
 
+
 class Adapter(abc.ABC):
-    
+
     @abc.abstractmethod
     def get_region(self, region_coordinates: Iterable, region_dims: Iterable) -> np.ndarray:
-        """ 
-        Get a rectangular region from the image
+        """get_region Get a pixel region of the image using the adapter library's implementation
 
-        Parameters:
-            region_coordinates(Tuple[int]): An (x,y) coordinate tuple representing the top-left pixel of the region
-            region_dims(Tuple[int]): A tuple representing the width and height dimensions of the region
-
-        Returns:
-            np.ndarray: A numpy array representative of the rectangular region from the image
-        """ 
+        :param region_coordinates: A set of (width, height) coordinates representing the top-left pixel of the region
+        :type region_coordinates: Iterable
+        :param region_dims: A set of (width, height) coordinates representing the region dimensions
+        :type region_dims: Iterable
+        :return: A numpy array representative of the pixel region from the image
+        :rtype: np.ndarray
+        """
         pass
 
     @abc.abstractmethod
-    def get_width() -> int: 
-        """ Get the width of the image """
+    def get_width() -> int:
+        """
+        Get the width property of the image using the adapter library's implementation
+        """
         pass
 
     @abc.abstractmethod
     def get_height() -> int:
-        """ Get the height of the image """ 
+        """
+        Get the height property of the image using the adapter library's implementation
+        """
         pass

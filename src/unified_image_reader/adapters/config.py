@@ -1,0 +1,2 @@
+
+VIPS_GET_REGION = "IMAGE_CROP"  # alternatively "REGION_FETCH"
