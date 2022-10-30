@@ -33,9 +33,9 @@ def is_region_index(obj: Any) -> bool:
     return isinstance(obj, int)
 
 
-def is_tuple_of_certain_length_and_type(obj: Any, length: int, element_type: Optional[type] = None) -> bool:
+def is_iterable_of_certain_length_and_type(obj: Any, length: int, element_type: Optional[type] = None) -> bool:
     """
-     Checks whether obj is a tuple of specified length and checks elements' types
+     Checks whether obj is a iterable of specified length and checks elements' types
 
     :rtype: bool
     """
@@ -56,7 +56,7 @@ def is_region_coordinates(obj: Any) -> bool:
 
     :rtype: bool
     """
-    return is_tuple_of_certain_length_and_type(obj, 2, int)
+    return is_iterable_of_certain_length_and_type(obj, 2, int)
 
 
 def is_region_dimensions(obj: Any) -> bool:
@@ -65,7 +65,7 @@ def is_region_dimensions(obj: Any) -> bool:
 
     :rtype: bool
     """
-    return is_tuple_of_certain_length_and_type(obj, 2, int)
+    return is_iterable_of_certain_length_and_type(obj, 2, int)
 
 
 def is_image_as_numpy_array(obj: Any) -> bool:
