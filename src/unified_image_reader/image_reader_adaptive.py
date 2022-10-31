@@ -2,12 +2,11 @@
     AdaptiveImageReader is an ImageReader and chooses the best library for the job.
 """
 
-from typing import Union
 
 from unified_image_reader.adapters import Adapter, SlideIO, VIPS
 from .exceptions import UnsupportedFormatException
 from .image_reader import ImageReader
-from .types import raise_type_error, RegionIndex, is_region_index, RegionCoordinates, is_region_coordinates, RegionDimensions, is_region_dimensions, Region
+from .types import raise_type_error, RegionIdentifier, RegionIndex, is_region_index, RegionCoordinates, is_region_coordinates, RegionDimensions, is_region_dimensions, Region
 
 
 FORMAT_ADAPTER_MAP = {
@@ -37,12 +36,12 @@ class ImageReaderAdaptive(ImageReader):
         # self._adapter (accessed by self.adapter) is unset by default so that the user can optionally override it.
         self._adapter = None
 
-    def get_region(self, region_identifier: Union[RegionIndex, RegionCoordinates], region_dims: RegionDimensions) -> Region:
+    def get_region(self, region_identifier: RegionIdentifier, region_dims: RegionDimensions) -> Region:
         """
         get_region from an image using an adapter's implementation after validating the region bounds
 
         :param region_identifier: A tuple of (width, height) coordinates or a region index based on region_dims
-        :type region_identifier: Union[RegionIndex, RegionCoordinates]
+        :type region_identifier: RegionIdentifier
         :param region_dims: A tuple of (weight, height) coordinates representing the region dimensions
         :type region_dims: RegionDimensions
         :raises TypeError: The starting pixels or pixel regions are out of bounds of the image dimensions

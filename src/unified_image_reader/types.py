@@ -5,15 +5,17 @@
 
 # TODO - apply PathLib to make the filepath manipulations more readable throughout the package
 
-from typing import Any, Iterable, Optional, Tuple
+from typing import Any, Iterable, Optional, Tuple, Union
 
 import numpy as np
 
 Region = np.ndarray
+
 RegionIndex = int
 RegionCoordinates = Tuple[int, int]
-RegionDimensions = Tuple[int, int]
+RegionIdentifier = Union[RegionIndex, RegionCoordinates]
 
+RegionDimensions = Tuple[int, int]
 ImageDimensions = Tuple[int, int]
 
 Ignored = Any
@@ -74,11 +76,20 @@ def is_region_dimensions(obj: Any) -> bool:
     return is_iterable_of_certain_length_and_type(obj, 2, int)
 
 
-# TODO - validate array type and dimensions
+def is_region_identifier(obj: Any) -> bool:
+    """
+    is_region_identifier checks whether obj is a RegionIdentifier
+
+    :rtype: bool
+    """
+    return is_region_index(obj) or is_region_coordinates(obj)
+
+
 def is_region(obj: Any) -> bool:
     """
     is_region checks whether obj is a numpy array (does not check dimensions)
 
     :rtype: bool
     """
+    # TODO - validate array type and dimensions
     return isinstance(obj, Region)

@@ -4,10 +4,9 @@
 
 from abc import ABC, abstractmethod
 import os
-from typing import Union
 
 from .exceptions import FileDoesNotExistException
-from .types import RegionIndex, RegionCoordinates, RegionDimensions, Region, ImageDimensions
+from .types import RegionIdentifier, RegionDimensions, Region, ImageDimensions
 
 
 class ImageReader(ABC):
@@ -33,16 +32,16 @@ class ImageReader(ABC):
         self.filepath = filepath
 
     @abstractmethod
-    def get_region(self, region_identifier: Union[RegionIndex, RegionCoordinates], region_dims: RegionDimensions) -> Region:
+    def get_region(self, region_identifier: RegionIdentifier, region_dims: RegionDimensions) -> Region:
         """
         get_region should return the region of size region_dims identified by region_identifier
 
         :param region_identifier: either an index (top-left first) or coordinates identifying the region in the image
-        :type region_identifier: Union[RegionIndex, RegionCoordinates]
+        :type region_identifier: RegionIdentifier
         :param region_dims: the dimensions of the region
         :type region_dims: RegionDimensions
         :return: the region in question
-        :rtype: ImageAsNumpyArray
+        :rtype: Region
         """
         raise NotImplementedError()
 
@@ -70,7 +69,7 @@ class ImageReader(ABC):
 
     @property
     @abstractmethod
-    def heigh(self) -> int:
+    def height(self) -> int:
         """
         heigh returns the height of the image
 
