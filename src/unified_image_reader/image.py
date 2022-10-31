@@ -1,85 +1,88 @@
 
 """
-    An interface into optimized image reading behavior with optional overriding.
+    An interface into reading an image with various methods. The most significant of which is the ImageReaderAdaptive, which identifies which library to use to read an image without loading the entire image into memory.
 """
 
 import contextlib
+import os
 from typing import Optional
+from unified_image_reader.exceptions import FileDoesNotExistException
+from unified_image_reader.image_reader import ImageReader
+from unified_image_reader.image_reader_adaptive import ImageReaderAdaptive
+from unified_image_reader.image_reader_directory import ImageReaderDirectory
 
-import numpy as np
+from unified_image_reader.types import ImageDimensions, Region, RegionDimensions, RegionIdentifier, raise_type_error
 
 from . import config
-from . import image_reader
 
 
 class Image(contextlib.AbstractContextManager):
 
-    """ 
+    """
     Image An image to be streamed into a specialized reader 
     """
 
-    def __init__(self, filepath, reader=None):
-        """__init__ Initialize Image object
+    def __init__(self, filepath: str):
+        """__init__ initializes an Image object
 
-        :param filepath: Filepath to image file to be opened
+        :param filepath: the filepath of the image in question (may be a directory - see ImageReaderDirectory)
         :type filepath: str
-        :param reader: Interface to reading the image file, defaults to None
-        :type reader: ImageReader or custom class supportive of the same functions, optional
         """
+        if not os.path.exists(filepath):
+            raise FileDoesNotExistException(filepath)
         self.filepath = filepath
-        self.reader = reader or image_reader.ImageReader(filepath)
+        # lazily initialize self._reader to allow for user election
+        self._reader = None
+        # self._iter helps with `for region in Image(...):`
         self._iter = None
 
-    def get_region(self, region_identifier, region_dims=config.DEFAULT_REGION_DIMS) -> np.ndarray:
+    def get_region(self, region_identifier: RegionIdentifier, region_dims: RegionDimensions = config.DEFAULT_REGION_DIMS) -> Region:
         """
-        get_region Get a pixel region from the image
+        get_region Get a region from the image
 
-        :param region_identifier: A  set of (width, height) coordinates or an indexed region based on region dimensions
-        :type region_identifier: Union[int, Iterable]
-        :param region_dims: A set of (width, height) coordinates representing the region dimensions, defaults to DEFAULT_REGION_DIMS
-        :type region_dims: Iterable, optional
-        :return: A numpy array representative of the pixel region from the image
-        :rtype: np.ndarray
+        :param region_identifier: A tuple of (width, height) coordinates or an indexed region based on region dimensions
+        :type region_identifier: RegionIdentifier
+        :param region_dims: A tuple of (width, height) coordinates representing the region dimensions, defaults to DEFAULT_REGION_DIMS
+        :type region_dims: RegionDimensions, optional
+        :return: the region identified by region_identifier
+        :rtype: Region
         """
         return self.reader.get_region(region_identifier, region_dims)
 
-    def number_of_regions(self, region_dims=config.DEFAULT_REGION_DIMS) -> int:
+    def number_of_regions(self, region_dims: RegionDimensions = config.DEFAULT_REGION_DIMS) -> int:
         """
-        number_of_regions Get total number of regions from the image based on region dimensions
+        number_of_regions gets the total number of regions from the image based on region dimensions
 
-        :param region_dims: A set of (width, height) coordinates representing the region dimensions, defaults to DEFAULT_REGION_DIMS
-        :type region_dims: Iterable, optional
-        :return: Number of regions in the image
+        :param region_dims: A tuple of (width, height) coordinates representing the region dimensions, defaults to DEFAULT_REGION_DIMS
+        :type region_dims: RegionDimensions, optional
+        :return: the number of regions in the image
         :rtype: int
         """
         return self.reader.number_of_regions(region_dims)
 
     @property
-    def width(self):
+    def width(self) -> int:
         """
-        width Get the width property of the image using its reader
+        width gets the width property of the image using its reader
 
-        :return: Width in pixels
         :rtype: int
         """
         return self.reader.width
 
     @property
-    def height(self):
+    def height(self) -> int:
         """
-        height Get the height property of the image using its reader
+        height gets the height property of the image using its reader
 
-        :return: Height in pixels
         :rtype: int
         """
         return self.reader.height
 
     @property
-    def dims(self):
+    def dims(self) -> ImageDimensions:
         """
-        dims Get the width and height properties of the image
+        dims gets the width and height properties of the image
 
-        :return: Width and height in pixels
         :rtype: Tuple[int]
         """
         return self.width, self.height
@@ -121,3 +124,30 @@ class Image(contextlib.AbstractContextManager):
 
     def __exit__(self, **kwargs) -> Optional[bool]:
         return super().__exit__(**kwargs)
+
+    @property
+    def reader(self):
+        """
+        reader returns self._reader, which determines how regions are read from self.filepath
+        """
+        if self._reader is None:
+            # set self._reader based on filepath
+            if os.path.isfile(self.filepath):
+                self._reader = ImageReaderAdaptive(self.filepath)
+            elif os.path.isdir(self.filepath):
+                self._reader = ImageReaderDirectory(self.filepath)
+            else:
+                raise FileDoesNotExistException(
+                    f"{self.filepath=} is neither a file nor a directory")
+        return self._reader
+
+    @reader.setter
+    def reader(self, new_reader: ImageReader):
+        """
+        reader allows the user to manually choose the ImageReader to use for their image
+
+        :type new_reader: ImageReader
+        """
+        if not isinstance(new_reader, ImageReader):
+            raise_type_error(new_reader)
+        self._reader = new_reader
