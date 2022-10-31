@@ -3,15 +3,20 @@
     Helpful type aliases and checking functions to improve readability in the rest of unified_image_reader
 """
 
-from typing import Tuple, Optional, Any
+# TODO - apply PathLib to make the filepath manipulations more readable throughout the package
+
+from typing import Any, Iterable, Optional, Tuple
 
 import numpy as np
 
+Region = np.ndarray
 RegionIndex = int
 RegionCoordinates = Tuple[int, int]
 RegionDimensions = Tuple[int, int]
 
-ImageAsNumpyArray = np.ndarray
+ImageDimensions = Tuple[int, int]
+
+Ignored = Any
 
 
 def raise_type_error(obj: Any):
@@ -20,6 +25,7 @@ def raise_type_error(obj: Any):
 
     :param obj: the object about which the TypeError occurred
     :type obj: Any
+    :raises TypeError: for obvious reasons
     """
     raise TypeError(f"{type(obj)=}, {obj=}")
 
@@ -39,7 +45,7 @@ def is_iterable_of_certain_length_and_type(obj: Any, length: int, element_type: 
 
     :rtype: bool
     """
-    if not isinstace(obj, Iterable):
+    if not isinstance(obj, Iterable):
         return False
     if not len(obj) == 2:
         return False
@@ -68,10 +74,11 @@ def is_region_dimensions(obj: Any) -> bool:
     return is_iterable_of_certain_length_and_type(obj, 2, int)
 
 
-def is_image_as_numpy_array(obj: Any) -> bool:
+# TODO - validate array type and dimensions
+def is_region(obj: Any) -> bool:
     """
-    is_image_as_numpy_array checks whether obj is a numpy array (does not check dimensions)
+    is_region checks whether obj is a numpy array (does not check dimensions)
 
     :rtype: bool
     """
-    return isinstance(obj, ImageAsNumpyArray)
+    return isinstance(obj, Region)

@@ -4,9 +4,9 @@ class UnsupportedFormatException(Exception):
     pass
 
 
-class InvalidCoordinatesException(Exception):
+class FileDoesNotExistException(Exception):
     pass
 
 
-class InvalidDimensionsException(Exception):
+class DirectoryDoesNotExistException(Exception):
     pass
