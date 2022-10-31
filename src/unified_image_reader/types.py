@@ -38,6 +38,8 @@ def is_region_index(obj: Any) -> bool:
 
     :rtype: bool
     """
+    if isinstance(obj, float):
+        return float.is_integer(obj)
     return isinstance(obj, int)
 
 
