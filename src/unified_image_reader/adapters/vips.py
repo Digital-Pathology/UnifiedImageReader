@@ -9,6 +9,8 @@ import numpy as np
 
 try:
     import pyvips
+    pyvips.vips.vips_cache_set_max(1000000000)
+
 except Exception as e:
     print("You have an issue with your pyvips installation, it may be because of the dependency on libvips. Contact Adin at adinbsolomon@gmail.com with any questions!")
     raise e
