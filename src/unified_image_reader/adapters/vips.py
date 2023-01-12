@@ -9,8 +9,9 @@ import numpy as np
 
 try:
     import pyvips
-    import logging
-    logging.basicConfig(level=logging.WARNING)
+    import warnings
+    #Ignore specific warning
+    warnings.filterwarnings("ignore", category=UserWarning, module="pyvips")
 except Exception as e:
     print("You have an issue with your pyvips installation, it may be because of the dependency on libvips. Contact Adin at adinbsolomon@gmail.com with any questions!")
     raise e
